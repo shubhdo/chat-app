@@ -1,42 +1,144 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Socket.IO chat</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Chat</title>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            background: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Chat Messages */
+        #messages {
+            list-style: none;
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #messages li {
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            max-width: 60%;
+            word-wrap: break-word;
+        }
+
+        #messages li:nth-child(odd) {
+            background: #e1f5fe;
+            align-self: flex-start;
+        }
+
+        #messages li:nth-child(even) {
+            background: #bbdefb;
+            align-self: flex-end;
+        }
+
+        /* Chat Input Box */
+        form {
+            background: #222;
+            padding: 12px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        form input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        form input:focus {
+            border-color: #007bff;
+        }
+
+        form button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        form button:hover {
+            background: #0056b3;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            #messages li {
+                max-width: 80%;
+            }
+        }
     </style>
-    <script src="/socket.io/socket.io.js"> </script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 
     <script>
+        $(function() {
+            var socket = io();
+            $('form').submit(function(e) {
+                e.preventDefault();
+                var message = $('#m').val().trim();
+                if (message) {
+                    socket.emit('chat message', message);
+                    $('#m').val('');
+                }
+                return false;
+            });
 
-    $(function(argument) {
-      var socket=io();
-      $('form').submit(function() {
-          socket.emit('chat message',$('#m').val());
-          $('#m').val('');
-          return false;
-      })
-      socket.on('chat message',function(message) {
-      $('#messages').append($('<li>').text(msg));
-      })
-
-    })
-      
-
+            socket.on('chat message event', function(msg) {
+                $('#messages').append($('<li>').text(msg));
+                window.scrollTo(0, document.body.scrollHeight);
+            });
+        });
     </script>
-  </head>
-  <body>
+</head>
+<body>
+    <header>
+        Chat with Us!
+    </header>
     <ul id="messages"></ul>
     <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+        <input id="m" autocomplete="off" placeholder="Type a message..." />
+        <button type="submit">Send</button>
     </form>
-  </body>
+</body>
 </html>
